@@ -34,8 +34,7 @@ class DbContextManager:
             connection_string = self.get_connection()
             self.session_maker = create_session_maker(connection_string)
         session = self.session_maker(expire_on_commit=False)
-        context = DbContext(session)
-        return context
+        return DbContext(session)
 
 
 class GroupRepository:
@@ -44,8 +43,7 @@ class GroupRepository:
 
     def get_all(self) -> List[Group]:
         with self.db.create_session() as session:
-            groups = session.query(Group).all()
-            return groups
+            return session.query(Group).all()
 
     def get_groupings(self) -> Dict[str, List[Group]]:
         groups = self.get_all()
@@ -57,15 +55,13 @@ class GroupRepository:
 
     def get_by_prefix(self, prefix: str) -> List[Group]:
         with self.db.create_session() as session:
-            groups = session.query(Group) \
-                .filter(Group.title.startswith(prefix)) \
-                .all()
-            return groups
+            return (
+                session.query(Group).filter(Group.title.startswith(prefix)).all()
+            )
 
     def get_by_id(self, group_id: int) -> Group:
         with self.db.create_session() as session:
-            group = session.query(Group).get(group_id)
-            return group
+            return session.query(Group).get(group_id)
 
     def create_by_names(self, names: List[str]):
         for name in names:
@@ -90,13 +86,11 @@ class TaskRepository:
 
     def get_all(self) -> List[Task]:
         with self.db.create_session() as session:
-            tasks = session.query(Task).all()
-            return tasks
+            return session.query(Task).all()
 
     def get_by_id(self, task_id: int) -> Task:
         with self.db.create_session() as session:
-            task = session.query(Task).get(task_id)
-            return task
+            return session.query(Task).get(task_id)
 
     def create_by_ids(self, ids: List[int]):
         with self.db.create_session() as session:
@@ -117,13 +111,11 @@ class VariantRepository:
 
     def get_all(self) -> List[Variant]:
         with self.db.create_session() as session:
-            variants = session.query(Variant).all()
-            return variants
+            return session.query(Variant).all()
 
     def get_by_id(self, variant_id: int) -> Variant:
         with self.db.create_session() as session:
-            variant = session.query(Variant).get(variant_id)
-            return variant
+            return session.query(Variant).get(variant_id)
 
     def create_by_ids(self, ids: List[int]):
         with self.db.create_session() as session:
@@ -144,15 +136,11 @@ class TaskStatusRepository:
 
     def get_all(self) -> List[TaskStatus]:
         with self.db.create_session() as session:
-            statuses = session.query(TaskStatus).all()
-            return statuses
+            return session.query(TaskStatus).all()
 
     def get_by_group(self, group: int) -> List[TaskStatus]:
         with self.db.create_session() as session:
-            statuses = session.query(TaskStatus) \
-                .filter_by(group=group) \
-                .all()
-            return statuses
+            return session.query(TaskStatus).filter_by(group=group).all()
 
     def get_task_status(
             self,
@@ -160,10 +148,11 @@ class TaskStatusRepository:
             variant: int,
             group: int) -> Union[TaskStatus, None]:
         with self.db.create_session() as session:
-            status = session.query(TaskStatus) \
-                .filter_by(task=task, variant=variant, group=group) \
+            return (
+                session.query(TaskStatus)
+                .filter_by(task=task, variant=variant, group=group)
                 .first()
-            return status
+            )
 
     def update_status(
             self,
@@ -173,13 +162,12 @@ class TaskStatusRepository:
             status: int,
             output: str):
         existing = self.get_task_status(task, variant, group)
-        if existing is not None:
-            if existing.status == TaskStatusEnum.Checked:
-                return  # We've already accepted this task!
+        if existing is not None and existing.status == TaskStatusEnum.Checked:
+            return  # We've already accepted this task!
         with self.db.create_session() as session:
             session.query(TaskStatus) \
-                .filter_by(task=task, variant=variant, group=group) \
-                .update({"status": status, "output": output})
+                    .filter_by(task=task, variant=variant, group=group) \
+                    .update({"status": status, "output": output})
             session.commit()
 
     def submit_task(
@@ -241,26 +229,25 @@ class MessageRepository:
 
     def get_all(self) -> List[Message]:
         with self.db.create_session() as session:
-            messages = session.query(Message) \
-                .order_by(Message.time.desc()) \
-                .all()
-            return messages
+            return session.query(Message).order_by(Message.time.desc()).all()
 
     def get_latest(self, count: int) -> List[Message]:
         with self.db.create_session() as session:
-            latest_messages = session.query(Message) \
-                .order_by(Message.time.desc()) \
-                .limit(count) \
+            return (
+                session.query(Message)
+                .order_by(Message.time.desc())
+                .limit(count)
                 .all()
-            return latest_messages
+            )
 
     def get_pending_messages(self) -> List[Message]:
         with self.db.create_session() as session:
-            pending = session.query(Message) \
-                .filter_by(processed=False) \
-                .order_by(Message.time.desc()) \
+            return (
+                session.query(Message)
+                .filter_by(processed=False)
+                .order_by(Message.time.desc())
                 .all()
-            return pending
+            )
 
     def get_pending_messages_unique(self) -> List[Message]:
         pending_messages = self.get_pending_messages()

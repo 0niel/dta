@@ -12,8 +12,7 @@ Base = declarative_base()
 def create_session_maker(connection_string: str) -> sessionmaker:
     engine = create_engine(connection_string)
     Base.metadata.create_all(engine)
-    factory = sessionmaker(bind=engine)
-    return factory
+    return sessionmaker(bind=engine)
 
 
 class Group(Base):
@@ -41,9 +40,7 @@ class IntEnum(sa.TypeDecorator):
         self._enumtype = enumtype
 
     def process_bind_param(self, value, dialect):
-        if isinstance(value, int):
-            return value
-        return value.value
+        return value if isinstance(value, int) else value.value
 
     def process_result_value(self, value, dialect):
         return self._enumtype(value)
@@ -122,12 +119,12 @@ class TaskStatus(Base):
     def __eq__(self, other):
         if isinstance(other, TaskStatus):
             return self.task == other.task and \
-                self.variant == other.variant and \
-                self.group == other.group and \
-                self.time == other.time and \
-                self.code == other.code and \
-                self.output == other.output and \
-                self.status == other.status
+                    self.variant == other.variant and \
+                    self.group == other.group and \
+                    self.time == other.time and \
+                    self.code == other.code and \
+                    self.output == other.output and \
+                    self.status == other.status
         return super.__eq__(self, other)
 
 
@@ -171,11 +168,11 @@ class Message(Base):
     def __eq__(self, other):
         if isinstance(other, Message):
             return self.task == other.task and \
-                self.variant == other.variant and \
-                self.group == other.group and \
-                self.time == other.time and \
-                self.code == other.code and \
-                self.ip == other.ip and \
-                self.processed == other.processed and \
-                self.id == other.id
+                    self.variant == other.variant and \
+                    self.group == other.group and \
+                    self.time == other.time and \
+                    self.code == other.code and \
+                    self.ip == other.ip and \
+                    self.processed == other.processed and \
+                    self.id == other.id
         return super.__eq__(self, other)

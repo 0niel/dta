@@ -7,8 +7,7 @@ from flask import Request
 
 
 def get_real_ip(request: Request) -> str:
-    ip_forward_headers = request.headers.getlist("X-Forwarded-For")
-    if ip_forward_headers:
+    if ip_forward_headers := request.headers.getlist("X-Forwarded-For"):
         return ip_forward_headers[0]
     return request.remote_addr
 
@@ -17,8 +16,7 @@ def get_exception_info() -> str:
     exc_type, exc_value, exc_traceback = sys.exc_info()
     lines = traceback.format_exception(
         exc_type, exc_value, exc_traceback)
-    log = "".join("!! " + line for line in lines)
-    return log
+    return "".join(f"!! {line}" for line in lines)
 
 
 def load_config_files(directory_name: str):

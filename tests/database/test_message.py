@@ -66,7 +66,7 @@ def test_message_get_pending(db: AppDatabase):
     message_pending = list(filter(lambda m: m.processed == False, messages))
     message = db.messages.get_pending_messages()
 
-    assert not any(mess.processed == True for mess in message)
+    assert all(mess.processed != True for mess in message)
     assert len(message) == len(message_pending)
     assert message == message_pending
 

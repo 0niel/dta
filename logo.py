@@ -28,10 +28,10 @@ class DTA:
     def makeLogo(self, letters=False):
         if letters:
             self.drawLogoWithLetters()
-            self.save()
         else:
             self.drawLogoWithoutLetters()
-            self.save()
+
+        self.save()
 
     def __blueSnake(self):
         self.HEIGHT = 177
@@ -237,18 +237,42 @@ class DTA:
                              self.x + 52, self.y + letters_h),
                             color)
         # clean letter 'A' (outside)
-        self.__cleanLetter(self.x, self.y,
-                           [24, 23, 22, 21, 20, 19, 18, 17],
-                           [56, 49, 42, 35, 28, 21, 19],
-                           range(0, 17),
-                           range(0, 17))
-        self.__cleanLetter(self.x + 52, self.y,
-                           [-24, -23, -22, -21, -20, -19, -18, -17],
-                           [56, 49, 42, 35, 28, 21, 19],
-                           [0, -1, -2, -3, -4, -5, -6,
-                            -7, -8, -9, -10, -11, -12,
-                            -13, -14, -15, -16],
-                           range(0, 17))
+        self.__cleanLetter(
+            self.x,
+            self.y,
+            [24, 23, 22, 21, 20, 19, 18, 17],
+            [56, 49, 42, 35, 28, 21, 19],
+            range(17),
+            range(17),
+        )
+
+        self.__cleanLetter(
+            self.x + 52,
+            self.y,
+            [-24, -23, -22, -21, -20, -19, -18, -17],
+            [56, 49, 42, 35, 28, 21, 19],
+            [
+                0,
+                -1,
+                -2,
+                -3,
+                -4,
+                -5,
+                -6,
+                -7,
+                -8,
+                -9,
+                -10,
+                -11,
+                -12,
+                -13,
+                -14,
+                -15,
+                -16,
+            ],
+            range(17),
+        )
+
         # clean letter 'A' (inside)
         self.__cleanLetterInside(self.x + 19, self.y + 33,
                                  self.x + 9, self.y + letters_h,
@@ -267,7 +291,7 @@ class DTA:
                              self.x + 35, self.y + letters_h),
                             self.trns)
         # letter 'П'
-        self.x = self.x + 60
+        self.x += 60
         self.draw.polygon(((self.x, self.y + letters_h),
                            (self.x, self.y),
                            (self.x + 42, self.y),
